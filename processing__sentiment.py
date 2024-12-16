@@ -113,7 +113,8 @@ def raw_to_clean_dataset_with_sentiment(raw_file):
 
     # Fetch article content for each URL and clean the text
     df['content'] = df['URL'].apply(lambda url: clean_article_content(fetch_article_content(url)))
-    df['sentiment'] = df['content'].apply(lambda content: sentiment_analyzer(content))
+    # df['sentiment'] = df['content'].apply(lambda content: sentiment_analyzer(content))
+    df['sentiment'] = sentiment_analyzer(df['description'])
 
     return df    
 

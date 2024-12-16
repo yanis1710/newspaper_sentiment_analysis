@@ -62,10 +62,10 @@ def fetch_news_articles(search_term, api_key_file, page_size=100):
 
                     all_articles.append({
                         'title': title,
-                        'description': description,
                         'source_name': source_name,
                         'published_at': published_at,
-                        'URL': url
+                        'URL': url,
+                        'description': description
                     })
                     existing_titles.add(title)  # Add the new title to the set of existing titles
 
