@@ -10,9 +10,11 @@ from nltk.stem import WordNetLemmatizer
 import pandas as pd
 
 # Download required NLTK resources (only once)
-#nltk.download('punkt')
-#nltk.download('stopwords')
-#nltk.download('wordnet')
+def download_nltk_resources():
+    nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('wordnet')
+    nltk.download('punkt_tab')
 
 def fetch_article_content(url):
     """
@@ -65,6 +67,8 @@ def clean_article_content(raw_text):
     Returns:
         str: The cleaned and preprocessed text.
     """
+    download_nltk_resources()
+
     # Remove unwanted special characters (extra spaces, newlines, etc.)
     cleaned_text = re.sub(r'\s+', ' ', raw_text)  # Replace multiple spaces or newlines with a single space
     cleaned_text = cleaned_text.strip()  # Remove leading and trailing spaces
@@ -114,7 +118,7 @@ def raw_to_clean_dataset_with_sentiment(raw_file):
     # Fetch article content for each URL and clean the text
     df['content'] = df['URL'].apply(lambda url: clean_article_content(fetch_article_content(url)))
     # df['sentiment'] = df['content'].apply(lambda content: sentiment_analyzer(content))
-    df['sentiment'] = sentiment_analyzer(df['description'])
+    df['sentiment'] = sentiment_analyzer(df['content'])
 
     return df    
 

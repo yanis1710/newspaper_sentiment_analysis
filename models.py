@@ -35,15 +35,8 @@ def sentiment_analyzer(X):
         >>> sentiment_analyzer("I hate getting stuck in traffic.")
         -0.7
     """
-    # check X is a list of strings
-    if not isinstance(X, list):
-        raise ValueError("Input must be a list of strings")
-    
-    # check if all elements in X are strings
-    if not all(isinstance(item, str) for item in X):
-        # map it to a list of strings
-        X = [str(item) for item in X]
-        
+    # check if all elements in X are strings        
+    X = [str(item) for item in X]
     
     # load the model
     model = AutoModelForSequenceClassification.from_pretrained('distilbert/distilbert-base-uncased-finetuned-sst-2-english')
