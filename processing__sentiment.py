@@ -67,8 +67,6 @@ def clean_article_content(raw_text):
     Returns:
         str: The cleaned and preprocessed text.
     """
-    download_nltk_resources()
-
     # Remove unwanted special characters (extra spaces, newlines, etc.)
     cleaned_text = re.sub(r'\s+', ' ', raw_text)  # Replace multiple spaces or newlines with a single space
     cleaned_text = cleaned_text.strip()  # Remove leading and trailing spaces
@@ -114,6 +112,8 @@ def raw_to_clean_dataset_with_sentiment(raw_file):
     """
     # Read the CSV file
     df = pd.read_csv(raw_file)
+    download_nltk_resources()
+
 
     # Fetch article content for each URL and clean the text
     # Create a new file or overwrite existing one to store raw content

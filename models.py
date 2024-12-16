@@ -6,6 +6,8 @@ if (torch.cuda.is_available()):
 else:
     device = torch.device("cpu")
 
+MODEL = "classla/xlm-r-parlasent"
+
 # TODO
 # Write a model, or multiples models, that analyzes the sentiment of an articles and 
 # returns the sentiment of it. The sentiment should be an integer between -1 and 1, 
@@ -37,8 +39,8 @@ def sentiment_analyzer(X):
     X = [str(item) for item in X]
     
     # load the model
-    model = AutoModelForSequenceClassification.from_pretrained('classla/xlm-r-parlasent').to(device)
-    tokenizer = AutoTokenizer.from_pretrained('classla/xlm-r-parlasent')
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL).to(device)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL)
 
     # predict the sentiment of the text in batches for less memory usage
     batch_size = 8
