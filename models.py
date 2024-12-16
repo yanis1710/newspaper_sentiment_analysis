@@ -27,6 +27,6 @@ def sentiment_analyzer(text):
         -0.7
     """
 
-    pass
+    return 0
 
     

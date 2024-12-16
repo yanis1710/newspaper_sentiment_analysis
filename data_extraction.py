@@ -4,7 +4,7 @@ from newsapi import NewsApiClient
 from datetime import datetime, timedelta
 
 def fetch_news_articles(search_term, api_key_file, page_size=100):
-    # Read the API key from the file
+    # Read the News API key from the file
     with open(api_key_file, 'r') as file:
         api_key = file.read().strip()
 
