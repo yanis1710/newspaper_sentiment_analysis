@@ -1,6 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
-import torch.nn.functional as F
 
 if (torch.cuda.is_available()):
     device = torch.device("cuda")
@@ -35,45 +34,38 @@ def sentiment_analyzer(X):
         >>> sentiment_analyzer("I hate getting stuck in traffic.")
         -0.7
     """
-    # check if all elements in X are strings
-        
     X = [str(item) for item in X]
     
     # load the model
-    model = AutoModelForSequenceClassification.from_pretrained('classla/xlm-r-parlasent')
+    model = AutoModelForSequenceClassification.from_pretrained('classla/xlm-r-parlasent').to(device)
     tokenizer = AutoTokenizer.from_pretrained('classla/xlm-r-parlasent')
 
-    # move to device
-    model = model.to(device)
-
-    # predict the sentiment of the text in batches
+    # predict the sentiment of the text in batches for less memory usage
     batch_size = 8
     all_predictions = []
 
     for i in range(0, len(X), batch_size):
         batch_texts = X[i:i + batch_size]
-        batch = tokenizer(batch_texts, padding=True, truncation=True, return_tensors="pt").to(device)
-        
+        batch = tokenizer(batch_texts, padding=True, truncation=True, max_length=512, return_tensors="pt").to(device)
+
         with torch.no_grad():
             outputs = model(**batch)
             
-            # batch_predictions = F.softmax(outputs.logits, dim=1)
             batch_predictions = outputs.logits
             all_predictions.append(batch_predictions)
     
     # concatenate the predictions
     all_predictions = torch.cat(all_predictions, dim=0)
+    # print(max(all_predictions))
+    # print(min(all_predictions))
 
     # map predictions from [0, 6] range to [-1, 1] range using linear scaling
-    all_predictions = 2 * all_predictions / 6 - 1
-    # labels = torch.argmax(all_predictions, dim=1).tolist()
-    # # Get the maximum probability for each prediction
-    # scores = torch.max(all_predictions, dim=1).values.tolist()
-
-    # # Convert scores to negative if label is 0 (negative sentiment)
-    # scores = [-score if label == 0 else score for score, label in zip(scores, labels)]
+    # originally 2 * all_predictions / 6 - 1
+    all_predictions = all_predictions / 3 - 1
+    # clip predictions to be between -1 and 1
+    all_predictions = torch.clip(all_predictions, -1, 1)
+    # print(max(all_predictions))
+    # print(min(all_predictions))
 
     predictions = [pred[0] for pred in all_predictions.tolist()]
     return predictions
-
-    
