@@ -1,5 +1,52 @@
 
 from models import *
+import requests
+from bs4 import BeautifulSoup
+
+def fetch_article_content(url):
+    """
+    Fetches the main content of a web page by extracting all text within the <article> tag.
+
+    Parameters:
+    url (str): The URL of the web page from which the article content is to be fetched.
+
+    Returns:
+    str or None: Returns the text content of the <article> tag if found, or None if:
+        - The request to the URL fails (non-200 status code).
+        - No <article> tag is found in the page.
+
+    """
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
+    }
+
+    # Send a GET request to the URL
+    response = requests.get(url, headers=headers)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # First, try to find the <article> tag
+        article = soup.find('article')
+
+        # If <article> tag is not found, search for <main>
+        if not article:
+            article = soup.find('main')
+
+        # Check if the article tag exists
+        if article:
+            # Extract the content within the article tag
+            article_text = article.get_text()
+            return article_text.strip()
+        else:
+            return None
+    else:
+        return None
+    
+def clean_text(text):
+    pass
+
 
 #TODO
 def assign_sentiment(raw_file):
@@ -77,3 +124,14 @@ def group_sentiment_by_newspaper(sentiment_file):
           file format differs, an error may occur.
     """
     pass
+
+if __name__ == "__main__":
+    url = 'https://www.bbc.com/sport/snooker/articles/c7042p2k1q5o'
+    url = 'https://www.theverge.com/2024/12/13/24320515/trump-tesla-crash-reporting-adas-nhtsa-sgo'
+    #url = 'https://gizmodo.com/trump-reportedly-set-to-attend-sixth-spacex-starship-launch-today-2000526481'
+    #url = 'https://www.npr.org/2024/11/17/1213718584/from-trump-opponent-to-trump-loyalist-the-evolution-of-marco-rubio'
+
+    content = fetch_article_content(url)
+    with open("output.txt", "w", encoding="utf-8") as f:
+        f.write(content)
+

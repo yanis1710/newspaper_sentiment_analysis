@@ -16,7 +16,7 @@ def fetch_news_articles(search_term, api_key_file, page_size=100):
 
     # Determine the CSV file path
     search_term_filename = search_term.replace(" ", "_")
-    csv_filename = os.path.join('Datasets', f'news_articles_{search_term_filename}.csv')
+    csv_filename = os.path.join('Raw_Datasets', f'news_articles_{search_term_filename}.csv')
 
     # Read existing articles from the CSV file if it exists
     if os.path.exists(csv_filename):
@@ -55,15 +55,17 @@ def fetch_news_articles(search_term, api_key_file, page_size=100):
             for article in articles:
                 title = article['title']
                 if title not in existing_titles:
-                    content = article['content']
                     source_name = article['source']['name']
                     published_at = article['publishedAt']
+                    url = article['url']
+                    description = article['description']
 
                     all_articles.append({
                         'title': title,
-                        'content': content,
+                        'description': description,
                         'source_name': source_name,
-                        'published_at': published_at
+                        'published_at': published_at,
+                        'URL': url
                     })
                     existing_titles.add(title)  # Add the new title to the set of existing titles
 
@@ -78,8 +80,8 @@ def fetch_news_articles(search_term, api_key_file, page_size=100):
     # Create a DataFrame to display the results
     df = pd.DataFrame(all_articles)
 
-    # Ensure the Datasets folder exists
-    os.makedirs('Datasets', exist_ok=True)
+    # Ensure the Raw_Datasets folder exists
+    os.makedirs('Raw_Datasets', exist_ok=True)
 
     # Check if the CSV file exists
     if os.path.exists(csv_filename):
