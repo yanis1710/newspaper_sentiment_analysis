@@ -46,7 +46,7 @@ def sentiment_analyzer(X):
 
     for i in range(0, len(X), batch_size):
         batch_texts = X[i:i + batch_size]
-        batch = tokenizer(batch_texts, padding=True, truncation=True, max_length=512, return_tensors="pt").to(device)
+        batch = tokenizer(batch_texts, padding=True, truncation=True, return_tensors="pt").to(device)
 
         with torch.no_grad():
             outputs = model(**batch)
