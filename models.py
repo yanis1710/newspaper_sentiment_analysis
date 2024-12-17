@@ -61,9 +61,8 @@ def sentiment_analyzer(X):
     # print(max(all_predictions))
     # print(min(all_predictions))
 
-    # map predictions from [0, 6] range to [-1, 1] range using linear scaling
-    # originally 2 * all_predictions / 6 - 1
-    all_predictions = all_predictions / 3 - 1
+    # map predictions from [0, 5] range to [-1, 1] range using linear scaling
+    all_predictions = 2 * all_predictions / 5 - 1
     # clip predictions to be between -1 and 1
     all_predictions = torch.clip(all_predictions, -1, 1)
     # print(max(all_predictions))
