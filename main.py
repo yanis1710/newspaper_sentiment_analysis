@@ -64,22 +64,46 @@ def plot_histogram(sentiment_file):
 
     df['average_sentiment'] = df[['sentiment', 'sentiment_contents', 'sentiment_description']].mean(axis=1)
     
-    print(f"Average Sentiment Score:\t{df['sentiment'].mean()}")
+    print(f"Average Sentiment Title Score:\t{df['sentiment'].mean()}")
     print(f"Average Sentiment Contents Score:\t{df['sentiment_contents'].mean()}")
     print(f"Average Sentiment Description Score:\t{df['sentiment_description'].mean()}")
+    print(f"All Average Sentiment:\t{df['average_sentiment'].mean()}")
     print(f"Total Articles:\t{df.shape[0]}")
 
-    plt.figure(figsize=(4,10))
-    plt.subplot(411).hist(df['sentiment'])
-    plt.title('A'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
-    plt.subplot(412).hist(df['sentiment_contents'])
-    plt.title('B'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
-    plt.subplot(413).hist(df['sentiment_description'])
-    plt.title('C'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
-    plt.subplot(414).hist(df['average_sentiment'])
-    plt.title('D'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
+    # plt.figure(figsize=(4,6))
+    # plt.subplot(411).hist(df['sentiment'])
+    # plt.title('A'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
+    # plt.subplot(412).hist(df['sentiment_contents'])
+    # plt.title('B'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
+    # plt.subplot(413).hist(df['sentiment_description'])
+    # plt.title('C'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
+    # plt.subplot(414).hist(df['average_sentiment'])
+    # plt.title('D'), plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
+    plt.hist(df['average_sentiment'])
+    plt.ylabel('Number of Articles'), plt.xlabel('Sentiment Score'), plt.xlim([-1.0, 1.0])
     plt.tight_layout()
     plt.show()
+
+def top_sentiment_articles(sentiment_file, output_fname):
+    """
+    Retrieve the articles with the most negative and positive sentiments
+    """
+    sentiment_file_fname = os.path.join(os.path.dirname('__file__'), sentiment_file)
+    with open(sentiment_file_fname, 'r', encoding='utf-8') as f:
+        df = pd.read_csv(f)
+    
+    df['average_sentiment'] = df[['sentiment', 'sentiment_contents', 'sentiment_description']].mean(axis=1)
+    sorted_df = df.sort_values('average_sentiment')
+
+    data = [
+        sorted_df.head(5)[['source_name', 'sentiment', 'sentiment_contents', 'sentiment_description', 'average_sentiment']].to_dict(),
+        sorted_df.tail(5)[['source_name', 'sentiment', 'sentiment_contents', 'sentiment_description', 'average_sentiment']].to_dict()
+    ]
+    output_fname = os.path.join(os.path.dirname('__file__'), output_fname)
+    with open(output_fname, 'w') as f:
+        json.dump(data, f, indent=4)
+
+    # return df.head(5), df.tail(5)
 
 def plot_sentiment_all(sentiment_df):
     plt.barh(df['source_name'], df['average_sentiment'])
@@ -122,11 +146,14 @@ if __name__ == '__main__':
     df = group_sentiment_by_newspaper(args.input_file)
     df = df[df['article_count'] >= 10]
 
-    output_fname = os.path.join(os.path.dirname('__file__'), args.output_file)
-    with open(output_fname, 'w') as f:
-        json.dump(df.to_dict(), f, indent=4)
+    # output_fname = os.path.join(os.path.dirname('__file__'), args.output_file)
+    # with open(output_fname, 'w') as f:
+    #     json.dump(df.to_dict(), f, indent=4)
     
     # plotting the figures
-    # plot_histogram(args.input_file)
+    # top_sentiment_articles(args.input_file, args.output_file)
+    plot_histogram(args.input_file)
     # plot_sentiment(df)
     # plot_sentiment_all(df)
+
+    # print(df)
